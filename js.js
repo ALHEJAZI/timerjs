@@ -1,15 +1,19 @@
-var timer = document.getElementById('timer');
+var timerInterval;
+var startTime;
+var elapsedTime = 0;
+
+var hoursDisplay = document.getElementById('hours');
+var minutesDisplay = document.getElementById('minutes');
+var secondsDisplay = document.getElementById('seconds');
+var millisecondsDisplay = document.getElementById('milliseconds');
+
 var startButton = document.getElementById('start');
 var pauseButton = document.getElementById('pause');
 var resetButton = document.getElementById('reset');
 
-var startTime;
-var elapsedTime = 0;
-var timerInterval;
-
 function startTimer() {
   startTime = Date.now() - elapsedTime;
-  timerInterval = setInterval(updateTimer, 1000);
+  timerInterval = setInterval(updateTimer, 10);
   startButton.disabled = true;
 }
 
@@ -20,7 +24,10 @@ function pauseTimer() {
 
 function resetTimer() {
   clearInterval(timerInterval);
-  timer.textContent = '00:00:00';
+  hoursDisplay.textContent = '00';
+  minutesDisplay.textContent = '00';
+  secondsDisplay.textContent = '00';
+  millisecondsDisplay.textContent = '000';
   elapsedTime = 0;
   startButton.disabled = false;
 }
@@ -28,26 +35,17 @@ function resetTimer() {
 function updateTimer() {
   var currentTime = Date.now();
   elapsedTime = currentTime - startTime;
-  var formattedTime = formatTime(elapsedTime);
-  timer.textContent = formattedTime;
-}
+  var time = new Date(elapsedTime);
 
-function formatTime(time) {
-  var totalSeconds = Math.floor(time / 1000);
-  var hours = Math.floor(totalSeconds / 3600);
-  var minutes = Math.floor((totalSeconds % 3600) / 60);
-  var seconds = totalSeconds % 60;
+  var hours = time.getUTCHours().toString().padStart(2, '0');
+  var minutes = time.getUTCMinutes().toString().padStart(2, '0');
+  var seconds = time.getUTCSeconds().toString().padStart(2, '0');
+  var milliseconds = time.getUTCMilliseconds().toString().padStart(3, '0');
 
-  var formattedTime =
-    padZero(hours) + ':' +
-    padZero(minutes) + ':' +
-    padZero(seconds);
-
-  return formattedTime;
-}
-
-function padZero(num) {
-  return (num < 10) ? '0' + num : num;
+  hoursDisplay.textContent = hours;
+  minutesDisplay.textContent = minutes;
+  secondsDisplay.textContent = seconds;
+  millisecondsDisplay.textContent = milliseconds;
 }
 
 startButton.addEventListener('click', startTimer);
